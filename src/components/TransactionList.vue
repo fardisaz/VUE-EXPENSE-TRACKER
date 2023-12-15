@@ -12,7 +12,7 @@
           transaction.amount < 0
             ? `- $
             ${transaction.amount.toString().slice(1)}`
-            : transaction.amount
+            : `$ ${transaction.amount}`
         }}</span>
         <button class="delete-btn">x</button>
       </li>
