@@ -4,7 +4,10 @@
   <div class="container">
     <Balance :total="total" />
     <IncomeExpenses :income="income" :expense="expense" />
-    <TransactionList :transactions="transactions" />
+    <TransactionList
+      :transactions="transactions"
+      @transactionDeleted="deleteTransaction"
+    />
     <AddTransaction @transactionSubmitted="transactionSubmitted" />
   </div>
 </template>
@@ -16,13 +19,14 @@ import TransactionList from "./components/TransactionList.vue";
 import AddTransaction from "./components/AddTransaction.vue";
 import { useToast } from "vue-toastification";
 //Anything you want it to be reactive you wrap it in ref function:
-import { ref, computed } from "vue";
-const transactions = ref([
-  { id: 1, text: "Flower", amount: -19.99 },
-  { id: 2, text: "Salary", amount: 299.33 },
-  { id: 3, text: "Book", amount: -10 },
-  { id: 4, text: "Camera", amount: 150 },
-]);
+import { ref, computed, onMounted } from "vue";
+const transactions = ref([]);
+onMounted(() => {
+  const savedTransactions = JSON.parse(localStorage.getItem("transactions"));
+  if (savedTransactions) {
+    transactions.value = savedTransactions;
+  }
+});
 const toast = useToast();
 // Get total
 const total = computed(() => {
@@ -53,7 +57,20 @@ const transactionSubmitted = (data) => {
     amount: data.amount,
   });
   //  A toast to verify the input
+  saveTransactionsToLocalStorage();
   toast.success("Transaction added");
+};
+// delete transaction
+const deleteTransaction = (id) => {
+  transactions.value = transactions.value.filter(
+    (transaction) => transaction.id !== id
+  );
+  saveTransactionsToLocalStorage();
+  toast.success("Transaction deleted");
+};
+// Save to localStorage
+const saveTransactionsToLocalStorage = () => {
+  localStorage.setItem("transactions", JSON.stringify(transactions.value));
 };
 
 // Generate unique ID
