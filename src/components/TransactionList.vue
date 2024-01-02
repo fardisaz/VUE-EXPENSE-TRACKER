@@ -24,7 +24,7 @@
 
 <!-- Composition API -->
 <script setup>
-import { defineProps, defineEmits } from "vue";
+import { defineEmits } from "vue";
 
 const emit = defineEmits(["delete"]);
 const props = defineProps({
